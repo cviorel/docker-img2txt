@@ -1,0 +1,7 @@
+# Ignore sample images and output files
+samples/
+output/
+
+# Ignore system files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,17 @@
+# Exclude sample images and output files
+samples/
+output/
+
+# Exclude git files
+.git/
+.gitignore
+
+# Exclude documentation and test files
+README.md
+LICENSE
+test.sh
+test.ps1
+
+# Exclude system files
+.DS_Store
+Thumbs.db
