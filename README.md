@@ -2,6 +2,8 @@
 
 A Docker container that uses Tesseract OCR to extract text from images. This tool makes it easy to perform Optical Character Recognition (OCR) on various image formats without installing Tesseract and its dependencies directly on your system.
 
+[![Build and Publish Docker Image](https://github.com/yourusername/docker-img2txt/actions/workflows/docker-build.yml/badge.svg)](https://github.com/yourusername/docker-img2txt/actions/workflows/docker-build.yml)
+
 ## Features
 
 - Extract text from various image formats (JPG, PNG, TIFF, BMP, GIF, WebP)
@@ -85,8 +87,51 @@ docker run --rm -v ${PWD}\samples:/images -v ${PWD}\output:/output img2txt /imag
 - `extract_text.sh`: The main script that handles the OCR process
 - `Dockerfile`: Defines the Docker image with Tesseract OCR and required dependencies
 - `test.sh` / `test.ps1`: Helper scripts for building and testing the container
+- `.github/workflows/`: GitHub Actions workflow files for CI/CD
 - `samples/`: Directory for storing test images
 - `output/`: Directory for storing extracted text files
+
+## GitHub Actions CI/CD Pipeline
+
+This project includes GitHub Actions workflows for continuous integration and delivery:
+
+### Automated Docker Image Building and Publishing
+
+The project is configured with GitHub Actions to automatically build and publish the Docker image to GitHub Container Registry (GHCR) when:
+
+- Code is pushed to the main/master branch
+- A new tag with format `v*` is created (e.g., v1.0.0)
+- Manually triggered via the GitHub Actions interface
+
+The published images can be found at: `ghcr.io/yourusername/docker-img2txt`
+
+### Using the Published Image
+
+Once the image is published, you can use it directly without building it locally:
+
+```bash
+docker pull ghcr.io/yourusername/docker-img2txt:latest
+docker run --rm -v /path/to/your/images:/images ghcr.io/yourusername/docker-img2txt:latest /images/your-image.jpg
+```
+
+### Versioning
+
+The CI/CD pipeline automatically tags the Docker images based on:
+
+- Git tags (e.g., v1.0.0)
+- Major.Minor versions (e.g., 1.0)
+- Branch name
+- Commit SHA
+- Latest tag for the default branch
+
+### Automated Testing
+
+Pull requests to the main/master branch trigger a test workflow that:
+
+1. Builds the Docker image
+2. Creates a test image with known text
+3. Runs the OCR process on the test image
+4. Verifies the extracted text matches the expected output
 
 ## Supported Languages
 

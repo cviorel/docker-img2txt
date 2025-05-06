@@ -1,0 +1,53 @@
+name: Test Docker Build
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Build Docker image (but don't push)
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: false
+          load: true
+          tags: img2txt:test
+
+      # Create test directories
+      - name: Create test directories
+        run: |
+          mkdir -p samples
+          mkdir -p output
+
+      # Create a simple test image with text
+      - name: Create test image
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+          convert -size 500x100 -background white -fill black -font Arial -pointsize 24 label:"Hello World OCR Test" samples/test.png
+
+      # Run the container with the test image
+      - name: Test OCR extraction
+        run: |
+          docker run --rm -v $(pwd)/samples:/images -v $(pwd)/output:/output img2txt:test /images/test.png /output/result
+          cat output/result.txt
+          if grep -q "Hello World OCR Test" output/result.txt; then
+            echo "Test passed: Text was correctly extracted"
+            exit 0
+          else
+            echo "Test failed: Expected text was not found"
+            exit 1
+          fi
